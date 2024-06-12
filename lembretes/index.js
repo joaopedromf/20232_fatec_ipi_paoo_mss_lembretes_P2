@@ -17,6 +17,16 @@ app.use(express.json())
 const lembretes = {}
 let id = 1
 
+const funcoes = {
+  LembreteClassificado: async (lembrete) => {
+    lembretes[lembrete.id].status = lembrete.status
+    await axios.post('http://localhost:10000/eventos', {
+      type: 'LembreteAtualizado',
+      payload: lembrete
+    })
+  }
+}
+
 //GET /lembretes
 app.get('/lembretes', (req, res) => res.send(lembretes))  
 
@@ -25,6 +35,7 @@ app.post('/eventos', (req, res) => {
   try{
     const evento = req.body
     console.log(evento)
+    funcoes[evento.type](evento.payload)
   }
   catch(e){}
   res.status(200).end() 
@@ -40,7 +51,8 @@ app.post('/lembretes', async (req, res) => {
   //ou seja, só uma requisição HTTP
   await axios.post('http://localhost:10000/eventos', {
     type: "LembreteCriado",
-    payload: lembrete
+    payload: lembrete,
+    status: "aguardando"
   })
   // HTTP 201 Created
   res.status(201).send(lembrete)

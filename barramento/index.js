@@ -14,23 +14,30 @@ app.post('/eventos', async (req, res) => {
   const evento = req.body
   eventos.push(evento)
   console.log(evento)
+  if(evento.type == "LembreteClassificado"){
+    try{
+      await axios.post('http://localhost:4000/eventos', evento) // mss lembretes
+    }
+    catch(e){}
+  }
+
   if(evento.type == "ObservacaoClassificada"){
     try{
-      await axios.post('http://localhost:5000/eventos', evento)
+      await axios.post('http://localhost:5000/eventos', evento) // mss observações
+    }
+    catch(e){}
+  }
+
+  if(evento.type != "ObservacaoClassificada" && evento.type != "LembreteClassificado"){
+    try{
+      await axios.post('http://localhost:6000/eventos', evento) // mss consulta
     }
     catch(e){}
   }
   
-  if(evento.type != "ObservacaoClassificada"){
+  if(evento.type == "ObservacaoCriada" || evento.type == "LembreteCriado"){
     try{
-      await axios.post('http://localhost:6000/eventos', evento)
-    }
-    catch(e){}
-  }
-  
-  if(evento.type == "ObservacaoCriada"){
-    try{
-      await axios.post('http://localhost:7000/eventos', evento)
+      await axios.post('http://localhost:7000/eventos', evento) // mss classificação
     }
     catch(e){}
   }
